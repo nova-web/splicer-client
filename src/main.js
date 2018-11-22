@@ -8,13 +8,18 @@ import '../static/css/icon.css';
 import App from './App';
 import 'babel-polyfill';
 import components from '@/components'; // 加载公共组件
+import VueSocketio from 'vue-socket.io';
+
+Vue.config.productionTip = false;
+Vue.use(
+    new VueSocketio({
+        debug: true,
+        connection: 'http://172.16.6.192:7001'
+    })
+);
 
 Vue.use(ElementUI, { size: 'small' });
 Vue.prototype.$axios = axios;
-
-//WebSocket封装方法
-import * as socketApi from './api/socket';
-Vue.prototype.socketApi = socketApi;
 
 // 重定义全局组件
 Object.keys(components).forEach(key => {

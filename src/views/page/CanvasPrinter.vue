@@ -19,7 +19,7 @@
       </div>
     </div>
     <div class="box-bottom">
-      <canvas ref="canvas" :style="{width: canvas.w + 'px', height: canvas.h + 'px', left: canvas.x + 'px', top: canvas.y + 'px'}"></canvas>
+      <canvas ref="canvas" @dblclick="dblclick" @mousemove="mouseMoveCanvas" @mousedown="mousedownCanvas" @mouseup="mouseupCanvas" @click="createDraw"></canvas>
     </div>
   </div>
 </template>
@@ -28,7 +28,7 @@
   export default {
     data() {
       return {
-        canvasData: null,
+        canvasData: [],  // 存储每个canvas对象的坐标
         limit: {
           min: 50,
           max: 700
@@ -67,54 +67,101 @@
     },
     computed: {
     },
+    watch: {
+
+    },
     mounted() {
       this.canvas.c = this.$refs.canvas;
+      console.log(window.innerWidth, window.innerHeight);
+
+      // canvas width: 100%
+      // if(this.canvas.c.width < window.innerWidth) {
+      //   this.canvas.c.width = window.innerWidth;
+      // }
+
+      // if(this.canvas.c.height < window.innerHeight) {
+      //   this.canvas.c.height = window.innerHeight;
+      // }
+
       this.canvas.ctx = this.canvas.c.getContext('2d');
       this.canvas.ctx.clearRect(0, 0, 200, 200); // 擦除(0,0)位置大小为200x200的矩形，擦除的意思是把该区域变为透明
       this.canvas.ctx.fillStyle = '#dddddd'; // 设置颜色
       this.canvas.ctx.fillRect(10, 10, 130, 130); // 把(10,10)位置大小为130x130的矩形涂色
-      // 利用Path绘制复杂路径:
-      var path = new Path2D();
-      path.arc(75, 75, 50, 0, Math.PI * 2, true);
-      path.moveTo(110, 75);
-      path.arc(75, 75, 35, 0, Math.PI, false);
-      path.moveTo(65, 65);
-      path.arc(60, 65, 5, 0, Math.PI * 2, true);
-      path.moveTo(95, 65);
-      path.arc(90, 65, 5, 0, Math.PI * 2, true);
-      this.canvas.ctx.strokeStyle = '#0000ff';
-      this.canvas.ctx.stroke(path);
+
+      // 存储数据
+      this.canvasData[0] = { x: 10, y: 10, w: 130, h: 130, color: '#ddd', isDone: false };
     },
     created() {
-      this.printCanvas();
+      // this.draw();
     },
     methods: {
-      draw() {
-        this.initCanvas();
-        this.printCanvas();
+      // ---------- 业务 -----------
+      // 事件
+      dblclick() {
       },
-      initCanvas() {
-        console.log('initCanvas', this.canvas.c);
-        this.canvas.c.width = 500;
-        this.canvas.c.height = 500;
+      mouseMoveCanvas(event) {
+        this.x.value = event.offsetX;
+        this.y.value = event.offsetY;
+        if(this.isInArea(event.offsetX, event.offsetY, this.canvasData[0])) {
+          this.canvas.c.style.cursor = 'move';
+          if(this.canvasData[0].isDown) {
+            var X = event.layerX - this.canvasData[0].w / 2;
+            var Y = event.layerY - this.canvasData[0].h / 2;
+            this.draw(X, Y, this.canvasData[0].w, this.canvasData[0].h, this.canvasData[0].color);
+          }
+        } else {
+          this.canvas.c.style.cursor = 'default';
+        }
+      },
+      mousedownCanvas(event) {
+        let X = event.layerX;
+        let Y = event.layerY;
+        if(X < this.canvasData[0].x + this.canvasData[0].w && X > this.canvasData[0].x) {
+          if(Y < this.canvasData[0].y + this.canvasData[0].h && Y > this.canvasData[0].y) {
+            this.canvasData[0].isDown = true;
+          }
+        } else {
+          this.canvasData[0].isDown = false;
+        }
+      },
+      mouseupCanvas(event) {
+        this.canvasData[0].isDown = false
+      },
+      createDraw(event) {
+        // 在区域里，则移动
+        if(this.isInArea(event.offsetX, event.offsetY, this.canvasData[0])) {
+          // 重绘
 
-        // 和input框关联
-        this.width.value = this.canvas.c.width;
-        this.width.min = this.limit.min;
-        this.width.max = this.limit.max;
-        this.height.value = this.canvas.c.height;
-        this.height.min = this.limit.min;
-        this.height.max = this.limit.max;
-        this.x.value = 0;
-        this.x.min = 0;
-        this.x.max = this.limit.max;
-        this.y.value = 0;
-        this.y.min = 0;
-        this.y.max = this.limit.max;
+        }
+        // 不在区域里，则新建
+        if(!this.isInArea(event.offsetX, event.offsetY, this.canvasData[0])) {
+          console.log('新建');
+        }
       },
-      // 绘制
-      printCanvas() {
-        console.log(this.canvas.ctx);
+
+      // ---------- 功能 -----------
+      draw(x, y, w, h, color) {
+        console.log(111, this.canvas.ctx);
+        // this.$nextTick(() => {
+        this.canvas.ctx.clearRect(this.canvasData[0].x, this.canvasData[0].y, this.canvasData[0].w, this.canvasData[0].h);
+        this.canvasData[0].x = x
+        this.canvasData[0].y = y
+        this.canvasData[0].w = w
+        this.canvasData[0].h = h
+        this.canvasData[0].color = color
+        this.canvas.ctx.fillStyle = this.canvasData[0].color
+        this.canvas.ctx.fillRect(this.canvasData[0].x, this.canvasData[0].y, this.canvasData[0].w, this.canvasData[0].h);
+        // });
+      },
+      // util
+      isInArea(x, y, obj) {
+        if(x < obj.x || x > obj.x + obj.w) {
+          return false;
+        }
+        if(y < obj.y || y > obj.y + obj.h) {
+          return false;
+        }
+        return true;
       },
       changeX() {
 
@@ -165,6 +212,8 @@
       position: relative;
       > canvas {
         // background-color: transparent;
+        height: 100%;
+        width: 100%;
         background-color: burlywood;
         position: absolute;
         left: 0;
