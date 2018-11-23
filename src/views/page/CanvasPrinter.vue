@@ -84,7 +84,7 @@
       // }
 
       this.canvas.ctx = this.canvas.c.getContext('2d');
-      this.canvas.ctx.clearRect(0, 0, 200, 200); // 擦除(0,0)位置大小为200x200的矩形，擦除的意思是把该区域变为透明
+      this.canvas.ctx.clearRect(10, 10, 130, 130); // 擦除(0,0)位置大小为200x200的矩形，擦除的意思是把该区域变为透明
       this.canvas.ctx.fillStyle = '#dddddd'; // 设置颜色
       this.canvas.ctx.fillRect(10, 10, 130, 130); // 把(10,10)位置大小为130x130的矩形涂色
 
@@ -212,8 +212,8 @@
       position: relative;
       > canvas {
         // background-color: transparent;
-        height: 100%;
-        width: 100%;
+        // height: 100%;
+        // width: 100%;
         background-color: burlywood;
         position: absolute;
         left: 0;

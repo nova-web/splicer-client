@@ -50,7 +50,7 @@
           {
             icon: 'el-icon-lx-cascades',
             index: 'divPrinter',
-            title: 'Div绘图'
+            title: 'Fabric绘图'
           },
           {
             icon: 'el-icon-lx-rank',
