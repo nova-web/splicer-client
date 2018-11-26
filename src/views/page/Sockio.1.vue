@@ -1,4 +1,5 @@
 <template>
+  <!-- 使用Vue指令完成鼠标操作 -->
   <div class="socket">
     <img class="img" src="@/assets/logo.png" alt="" v-drag="drag" draggable="true" :style="{left:data.x, top:data.y}">
   </div>

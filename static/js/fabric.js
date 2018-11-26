@@ -2959,6 +2959,7 @@ fabric.CommonMethods = {
           onLoaded();
           return;
         }
+
         var klass = fabric.util.getKlass(o.type, namespace);
         klass.fromObject(o, function (obj, error) {
           error || (enlivenedObjects[index] = obj);

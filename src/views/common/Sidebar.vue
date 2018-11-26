@@ -39,29 +39,29 @@
         items: [
           {
             icon: 'el-icon-lx-home',
-            index: 'chat',
-            title: '聊天室-直接websocket'
+            index: 'sockio',
+            title: '测试sock.io, 多客户端同步'
           },
           {
             icon: 'el-icon-lx-emoji',
-            index: 'chat2',
-            title: '聊天室2-封装websocket'
+            index: 'fabric-base',
+            title: 'fabric基础'
           },
           {
             icon: 'el-icon-lx-cascades',
-            index: 'divPrinter',
-            title: 'Fabric绘图'
-          },
-          {
-            icon: 'el-icon-lx-rank',
-            index: 'canvasPrinter',
-            title: 'Canvas绘图'
-          },
-          {
-            icon: 'el-icon-lx-copy',
             index: 'videos',
             title: 'Videos直播'
           }
+          // ,{
+          //   icon: 'el-icon-lx-rank',
+          //   index: 'canvasPrinter',
+          //   title: 'Canvas绘图'
+          // },
+          // {
+          //   icon: 'el-icon-lx-copy',
+          //   index: 'videos',
+          //   title: 'Videos直播'
+          // }
         ]
       }
     },
