@@ -7,7 +7,7 @@ export default new Router({
     routes: [
         {
             path: '/',
-            redirect: '/chat'
+            redirect: '/sockio'
         },
         {
             path: '/',

@@ -261,5 +261,29 @@ Firing events
 
 控制： http://fabricjs.com/controls-customization  // 注：  hasControls / hasBorders / hasRotatingPoint / visible / selectable / evented / transparentCorners / centeredScaling / centeredRotation
 
+
+层级：你可以得到z - index:canvas.getObjects().indexOf(some_object)。   // https://www.kancloud.cn/cxr17618/fabricjs/621301
+四个命令可以改变叠加顺序:
+some_object.sendBackwards()
+some_object.sendToBack()
+some_object.bringForward()
+some_object.bringToFront()。
+
+//////////在一个固定的范圈内拖动
+var goodtop, goodleft, boundingObject;
+
+canvas.on("object:moving", function(){
+var obj = this.relatedTarget;
+var bounds = boundingObject;
+obj.setCoords();
+if(!obj.isContainedWithinObject(bounds)){
+obj.setTop(goodtop);
+obj.setLeft(goodleft);
+canvas.refresh();
+} else {
+goodtop = obj.top;
+goodleft = obj.left;
+}
+});
  -->
 

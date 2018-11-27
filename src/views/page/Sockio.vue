@@ -12,155 +12,154 @@
     name: 'socketio-canvas',
     sockets: {
       connect: function(data) {
-        // this.$socket.emit('initData');   // controller
-        console.log('socket connected', data);
         // this.getViewProt(data);
       },
       customEmit: function(data) {
-        console.log('socked server-->', data);
       },
       getViewProt(data, id) {
         if(this.$socket.id !== data.id) {
-          console.log('viewProt from server', typeof data);
           this.canvas.loadFromJSON(JSON.parse(data.data), this.canvas.renderAll.bind(this.canvas), function(o, object) {
           });
         }
       },
       getImage(data) {
         this.getImgData = data;
-        console.log('getImgData from server', data);
       }
     },
     data() {
       return {
         canvas: {},
         canvasData: {},
-        getImgData: {},
+        getImgData: {}
       }
     },
     mounted() {
       this.canvas = new fabric.Canvas('canvas');
       fabric.Object.prototype.transparentCorners = false;  // 不透明
+      fabric.Object.prototype.lockRotation = true;
+      fabric.Object.prototype.hasRotatingPoint = false;
+      fabric.Object.prototype.selectable = true;
+      this.canvas.selection = true;
 
-      // var circle =;
-
-      // var text = ;
-
-
-      class LabeledRect {
-        constructor(label) {
-          this.width = 100;
-          this.height = 50;
-          this.left = 100;
-          this.top = 200;
-          this.label = label;
-
-        }
-
-        toString() {
-          return [
-            new fabric.Circle({
-              radius: 100,
-              fill: '#eef',
-              scaleY: 0.5,
-              originX: 'center',
-              originY: 'center'
-            }),
-
-            new fabric.Text(this.label, {
-              fontSize: 30,
-              originX: 'center',
-              originY: 'center'
-            })
-          ]
-        }
-      }
-
-      console.log(new LabeledRect('aaas'));
-
-      var group = new fabric.Group(new LabeledRect('aaas').toString(), {
-        left: 150,
-        top: 100,
-        angle: -10,
-        fontSize: 10
-      });
-
-      this.canvas.add(group);
-
-      // // 父类
-      // let LabeledRect = fabric.util.createClass(fabric.Group, {
-      //   // 仅用于一致性，因为所有Fabric对象都具有type属性（rect，circle，path，text等）
-      //   type: 'LabeledRect',
-
-      //   initialize: function(options) { // 构造函数
-      //     options || (options = {});
-
-
-
-      //     this.callSuper('initialize', options);
-      //     // give all labeled rectangles fixed width/heigh of 100/50
-      //     this.set({ width: 100, height: 50 });
-      //     this.set('label', options.label || '');
-      //   },
-
-      //   toObject: function() {  // 在实例中表示对象（和JSON）
-      //     return fabric.util.object.extend(this.callSuper('toObject'), {
-      //       label: this.get('label')
-      //     });
-      //   },
-
-      //   _render: function(ctx) {  // 绘制实例
-      //     this.callSuper('_render', ctx);
-
-      //     ctx.font = '20px Helvetica';
-      //     ctx.fillStyle = '#333';
-
-      //     console.log("label", this.label);
-      //     ctx.fillText(this.label, -this.width / 2, -this.height / 2 + 20);
+      // class LabeledRect {
+      //   constructor(label) {
+      //     this.width = 100;
+      //     this.height = 50;
+      //     this.left = 100;
+      //     this.top = 200;
+      //     this.label = label;
       //   }
+
+      //   toString() {
+      //     return [
+      //       new fabric.Circle({
+      //         radius: 100,
+      //         fill: '#666',
+      //         originX: 'center',
+      //         originY: 'center'
+      //       }),
+
+      //       new fabric.Text(this.label, {
+      //         fontSize: 30,
+      //         originX: 'center',
+      //         originY: 'center'
+      //       })
+      //     ]
+      //   }
+      // }
+
+      // var group = new fabric.Group(new LabeledRect('aaas').toString(), {
+      //   left: 150,
+      //   top: 100,
+      //   fontSize: 10
       // });
 
-      // // // 实例
-      // let labeledRect = new LabeledRect({
-      //   width: 100,
-      //   height: 50,
-      //   left: 100,
-      //   top: 200,
-      //   label: 'test',
-      //   fill: '#faa'
-      // });
-      // this.canvas.add(labeledRect);
+      // this.canvas.add(group);
 
-      // let rect = new fabric.Rect({
-      //   width: 200, height: 100, left: 0, top: 55,
-      //   fill: 'rgba(255,0,0,0.5)'
-      // });
-      // this.canvas.add(rect);
+      let rectObj = new fabric.Rect({
+        width: 50, height: 50, left: 0, top: 0,
+        fill: 'green'
+      });
+      this.canvas.add(rectObj);
 
       this.canvas.on({
         'object:moving': this.onChange,
         'object:scaling': this.onChange,
-        'object:rotating': this.onChange,
-        'mouse:down'(e) {
-          console.log('selected', e);
+        'object:rotating': this.onChange
+      });
+
+      var rect, isDown, origX, origY;
+
+      this.canvas.on('mouse:down', o => {
+        if(o.target !== null) {
+          // console.log('not null');
+        } else {
+          // console.log('null');
+          isDown = true;
+          origX = o.e.layerX;
+          origY = o.e.layerY;
+          rect = new fabric.Rect({
+            left: origX,
+            top: origY,
+            originX: 'left',
+            originY: 'top',
+            width: o.e.layerX - origX,
+            height: o.e.layerY - origY,
+            fill: 'rgba(255,0,0,0.5)'
+          });
+          this.canvas.add(rect);
+        }
+      });
+
+      this.canvas.on('mouse:move', o => {
+        if(!isDown) return;
+
+        if(origX > o.e.layerX) {
+          rect.set({ left: Math.abs(o.e.layerX) });
+        }
+        if(origY > o.e.layerY) {
+          rect.set({ top: Math.abs(o.e.layerY) });
+        }
+        rect.set({ width: Math.abs(origX - o.e.layerX) });
+        rect.set({ height: Math.abs(origY - o.e.layerY) });
+
+        this.canvas.renderAll();
+      });
+
+      this.canvas.on('mouse:up', o => {
+        isDown = false;
+        //画图完成后可以选中
+        if(o.target === null) {
+          var objs = this.canvas.getObjects();
+          for(var obj in objs) {
+            objs[obj].setCoords();   // 如果抬起时，除了自己没有元素，报错：objs[obj].setCoords is not a function
+          }
         }
       });
     },
     created() {
-      this.getImage();
+      // this.getImage();
     },
     methods: {
       getImage(data) {
         this.getImgData = data;
         this.$socket.emit('getImage', this.getImgData);
       },
-      // canvas移动触发
       onChange(options) {
-        this.moving = true;
         options.target.setCoords();
+
         this.canvas.forEachObject(function(obj) {
           if(obj === options.target) return;
-          obj.set('opacity', options.target.intersectsWithObject(obj) ? 0.5 : 1);
+          // obj.set('opacity', options.target.intersectsWithObject(obj) ? 0.5 : 1);  // 重叠
+          // if(Math.abs(options.target.getBoundingRect().left - obj.target.getBoundingRect().left) < 5) {
+          //   console.log(8888);
+          // }
+
+          if(options.target.intersectsWithObject(obj)) {
+            obj.set('opacity', 0.5);
+          } else {
+            obj.set('opacity', 1);
+          }
         });
         this.$socket.emit('getViewProt', JSON.stringify(this.canvas));
       }
