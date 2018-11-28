@@ -99,7 +99,9 @@
       this.canvas.on('mouse:up', o => {
         isDown = false;
         //画图完成后可以选中和移动
-        rect.setCoords();
+        if(rect) {
+          rect.setCoords();
+        }
       });
       // ------------------------------------------------------------
 
