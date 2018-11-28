@@ -39,42 +39,8 @@
       fabric.Object.prototype.lockRotation = true;
       fabric.Object.prototype.hasRotatingPoint = false;
       fabric.Object.prototype.selectable = true;
-      this.canvas.selection = true;
-
-      // class LabeledRect {
-      //   constructor(label) {
-      //     this.width = 100;
-      //     this.height = 50;
-      //     this.left = 100;
-      //     this.top = 200;
-      //     this.label = label;
-      //   }
-
-      //   toString() {
-      //     return [
-      //       new fabric.Circle({
-      //         radius: 100,
-      //         fill: '#666',
-      //         originX: 'center',
-      //         originY: 'center'
-      //       }),
-
-      //       new fabric.Text(this.label, {
-      //         fontSize: 30,
-      //         originX: 'center',
-      //         originY: 'center'
-      //       })
-      //     ]
-      //   }
-      // }
-
-      // var group = new fabric.Group(new LabeledRect('aaas').toString(), {
-      //   left: 150,
-      //   top: 100,
-      //   fontSize: 10
-      // });
-
-      // this.canvas.add(group);
+      // 禁用组选择
+      this.canvas.selection = false;
 
       let rectObj = new fabric.Rect({
         width: 50, height: 50, left: 0, top: 0,
@@ -88,6 +54,8 @@
         'object:rotating': this.onChange
       });
 
+      // ------------------------------------------------------------
+      // 拖拽生成矩形
       var rect, isDown, origX, origY;
 
       this.canvas.on('mouse:down', o => {
@@ -95,16 +63,17 @@
           // console.log('not null');
         } else {
           // console.log('null');
+          let pointer = this.canvas.getPointer(o.e);
           isDown = true;
-          origX = o.e.layerX;
-          origY = o.e.layerY;
+          origX = pointer.x;
+          origY = pointer.y;
           rect = new fabric.Rect({
             left: origX,
             top: origY,
             originX: 'left',
             originY: 'top',
-            width: o.e.layerX - origX,
-            height: o.e.layerY - origY,
+            width: pointer.x - origX,
+            height: pointer.y - origY,
             fill: 'rgba(255,0,0,0.5)'
           });
           this.canvas.add(rect);
@@ -114,27 +83,31 @@
       this.canvas.on('mouse:move', o => {
         if(!isDown) return;
 
-        if(origX > o.e.layerX) {
-          rect.set({ left: Math.abs(o.e.layerX) });
+        let pointer = this.canvas.getPointer(o.e);
+        if(origX > pointer.x) {
+          rect.set({ left: Math.abs(pointer.x) });
         }
-        if(origY > o.e.layerY) {
-          rect.set({ top: Math.abs(o.e.layerY) });
+        if(origY > pointer.y) {
+          rect.set({ top: Math.abs(pointer.y) });
         }
-        rect.set({ width: Math.abs(origX - o.e.layerX) });
-        rect.set({ height: Math.abs(origY - o.e.layerY) });
+        rect.set({ width: Math.abs(origX - pointer.x) });
+        rect.set({ height: Math.abs(origY - pointer.y) });
 
         this.canvas.renderAll();
       });
 
       this.canvas.on('mouse:up', o => {
         isDown = false;
-        //画图完成后可以选中
-        if(o.target === null) {
-          var objs = this.canvas.getObjects();
-          for(var obj in objs) {
-            objs[obj].setCoords();   // 如果抬起时，除了自己没有元素，报错：objs[obj].setCoords is not a function
-          }
-        }
+        //画图完成后可以选中和移动
+        rect.setCoords();
+      });
+      // ------------------------------------------------------------
+
+      // 边界检测
+      this.canvas.on('object:moving', o => {
+        let pointer = this.canvas.getPointer(o.e);
+        let pointer2 = o.target.getBoundingRect();
+        // console.log(999, o, pointer, pointer2, this.canvas);
       });
     },
     created() {
@@ -150,11 +123,11 @@
 
         this.canvas.forEachObject(function(obj) {
           if(obj === options.target) return;
-          // obj.set('opacity', options.target.intersectsWithObject(obj) ? 0.5 : 1);  // 重叠
+
           // if(Math.abs(options.target.getBoundingRect().left - obj.target.getBoundingRect().left) < 5) {
           //   console.log(8888);
           // }
-
+          // 重叠   // obj.set('opacity', options.target.intersectsWithObject(obj) ? 0.5 : 1);  
           if(options.target.intersectsWithObject(obj)) {
             obj.set('opacity', 0.5);
           } else {

@@ -15,8 +15,8 @@ import VueSocketio from 'vue-socket.io';
 Vue.config.productionTip = false;
 Vue.use(
     new VueSocketio({
-        debug: true,
-        connection: 'http://172.16.6.192:7001'
+        // debug: true,
+        connection: process.env.NODE_ENV === 'development' ? 'http://172.16.6.192:7001/' : 'http://172.16.6.173/'
     })
 );
 

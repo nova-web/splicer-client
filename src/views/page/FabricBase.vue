@@ -51,6 +51,12 @@
       canvas.selection = false; //禁用组选择  // 组: 矩形上写文字 new fabric.Group([ text, circle ], {});  https://github.com/rodrigopandini/articles-fabric.js/blob/master/Part-3.md
 
 
+      // ------------------------------------------------------------------------------
+      // 虚线
+      let dashline = new fabric.Line([0, 20, 100, 20], {
+        strokeDashArray: [5, 5],
+        stroke: 'black'
+      });
 
 
       // ------------------------------------------------------------------------------
@@ -77,7 +83,7 @@
       });
 
       let text = new fabric.Text('hello world', { left: 100, top: 100, fontSize: 16, fontWeight: 'normal' }); // 字体  https://github.com/rodrigopandini/articles-fabric.js/blob/master/Part-2.md
-      canvas.add(rect1, rect2, text);
+      canvas.add(rect1, rect2, text, dashline);
 
       canvas.on({
         'object:moving': onChange,
