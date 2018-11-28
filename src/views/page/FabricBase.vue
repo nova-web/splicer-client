@@ -270,10 +270,17 @@ Firing events
 
 层级：你可以得到z - index:canvas.getObjects().indexOf(some_object)。   // https://www.kancloud.cn/cxr17618/fabricjs/621301
 四个命令可以改变叠加顺序:
-some_object.sendBackwards()
-some_object.sendToBack()
-some_object.bringForward()
-some_object.bringToFront()。
+var t = canvas.getActiveObject();
+canvas.sendBackwards(t) //向下跳一层
+canvas.sendToBack(t)    //向下跳底层：
+canvas.bringForward(t)  //向上跳一层：
+canvas.bringToFront(t)  //向上跳顶层：
+//或者：
+t.sendBackwards();
+t.sendToBack();
+t.bringForward();
+t.bringToFront();
+
 
 //////////在一个固定的范圈内拖动
 var goodtop, goodleft, boundingObject;
@@ -291,5 +298,9 @@ goodtop = obj.top;
 goodleft = obj.left;
 }
 });
+
+
+Api:
+calcViewportBoundaries()  使用当前viewportTransform计算画布4角的位置。有助于使用对象绝对坐标确定对象何时在当前渲染视口中（aCoords）
  -->
 
