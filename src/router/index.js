@@ -30,6 +30,11 @@ export default new Router({
                     meta: { title: '直播' }
                 },
                 {
+                    path: '/testProtocol',
+                    component: resolve => require(['../views/page/testProtocol.vue'], resolve),
+                    meta: { title: '测试三代协议' }
+                },
+                {
                     path: '/404',
                     component: resolve => require(['../views/page/404.vue'], resolve),
                     meta: { title: '404' }

@@ -80,8 +80,6 @@
       var rect, isDown, origX, origY;
 
       this.canvas.on('mouse:down', o => {
-        let pointer2 = o.target.getBoundingRect();
-        console.log('pointer:', pointer2);
         if(o.target !== null) {
           // console.log('not null');
         } else {

@@ -51,13 +51,13 @@
             icon: 'el-icon-lx-cascades',
             index: 'videos',
             title: 'Videos直播'
+          },
+          {
+            icon: 'el-icon-lx-rank',
+            index: 'testProtocol',
+            title: '测试三代协议'
           }
           // ,{
-          //   icon: 'el-icon-lx-rank',
-          //   index: 'canvasPrinter',
-          //   title: 'Canvas绘图'
-          // },
-          // {
           //   icon: 'el-icon-lx-copy',
           //   index: 'videos',
           //   title: 'Videos直播'
