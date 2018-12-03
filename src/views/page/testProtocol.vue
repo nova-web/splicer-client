@@ -6,10 +6,7 @@
   export default {
     data() {
       return {
-        packageNum: ['55', 'AA', '00', '04', 'FA', '00', '00', '00', '00', '00', '00', '00', '10', '00', '02', '13', 'E0', '00', '02', '03'], // 和是302 02 03
-        // 55 AA 00 04 FA 00 00 00 00 00 00 00 01 00 01 13 E0 00 48 57
-        // packageNum: '55AA0004FA0000000000000001000113E0004857'
-        // packageNum: [0x55, 0xAA, 0x00, 0x04, 0xFA, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x10, 0x00, 0x02, 0x13, 0xE0, 0x00, 0x48, 0x57],
+        packageNum: [0x55, 0xAA, 0x00, 0x04, 0xFA, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x10, 0x00, 0x02, 0x13, 0xE0, 0x00, 0x48, 0x57],
         WIN_INFO: 0x13020010,
         id: 0
       }
@@ -20,8 +17,10 @@
     methods: {
       // 请求包 装包
       installPackage() {
-        const buffer = new ArrayBuffer(20);
-        const dv = new DataView(buffer);
+        let buffer = new ArrayBuffer(20);
+        let dv = new DataView(buffer);
+        dv.setUint8(0, 0x55);
+        dv.setUint8(1, 0xAA);
         // 在第1个字节，以大端字节序写入值为25的无符号整数
         dv.setUint8(0, 55);
 
@@ -71,6 +70,13 @@
 <style>
 </style>
 <!--
+
+// packageNum: ['55', 'AA', '00', '04', 'FA', '00', '00', '00', '00', '00', '00', '00', '10', '00', '02', '13', 'E0', '00', '02', '03'], // 和是302 02 03
+// 55 AA 00 04 FA 00 00 00 00 00 00 00 01 00 01 13 E0 00 48 57
+// packageNum: '55AA0004FA0000000000000001000113E0004857'
+
+
+
 http://es6.ruanyifeng.com/#docs/arraybuffer
 DataView 视图提供 8 个方法写入内存。
 
@@ -93,4 +99,22 @@ getInt32：读取 4 个字节，返回一个 32 位整数。
 getUint32：读取 4 个字节，返回一个无符号的 32 位整数。
 getFloat32：读取 4 个字节，返回一个 32 位浮点数。
 getFloat64：读取 8 个字节，返回一个 64 位浮点数。
+
+
+dv.setUint8(1, 0xAA);
+undefined
+dv.setUint8(0, 0x55);
+undefined
+dv
+DataView(20) {}
+buffer: ArrayBuffer(20)
+[[Int8Array]]: Int8Array(20) [85, -86, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+[[Int16Array]]: Int16Array(10) [-21931, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+[[Int32Array]]: Int32Array(5) [43605, 0, 0, 0, 0]
+[[Uint8Array]]: Uint8Array(20) [85, 170, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]    ->这个存的就是十六进制转十进制
+byteLength: 20
+__proto__: ArrayBuffer
+byteLength: 20
+byteOffset: 0
+__proto__: DataView
 -->
