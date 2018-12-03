@@ -16,7 +16,7 @@
       },
       customEmit: function(data) {
       },
-      getViewProt(data, id) {
+      getViewProt(data) {
         if(this.$socket.id !== data.id) {
           this.canvas.loadFromJSON(JSON.parse(data.data), this.canvas.renderAll.bind(this.canvas), function(o, object) {
           });
