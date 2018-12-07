@@ -172,6 +172,7 @@
         //画图完成后可以选中和移动
         if(rect) {
           rect.setCoords();
+          this.$socket.emit('getViewProt', JSON.stringify(this.canvas));
         }
       });
       // ------------------------------------------------------------
