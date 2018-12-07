@@ -83,7 +83,14 @@
       });
 
       let text = new fabric.Text('hello world', { left: 100, top: 100, fontSize: 16, fontWeight: 'normal' }); // 字体  https://github.com/rodrigopandini/articles-fabric.js/blob/master/Part-2.md
-      canvas.add(rect1, rect2, text, dashline);
+
+      let itext = new fabric.IText('I am in Comic Sanc', {
+        left: 0,
+        top: 0,
+        fill: '#000',
+        fontFamily: 'Comic Sans'
+      })
+      canvas.add(rect1, rect2, text, itext, dashline);
 
       canvas.on({
         'object:moving': onChange,
