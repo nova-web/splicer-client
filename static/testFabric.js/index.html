@@ -1,5 +1,6 @@
 <!DOCTYPE >
 <html>
+
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
         <link rel="stylesheet" type="text/css" href="./contextMenu/jquery.contextMenu.css" />
@@ -78,6 +79,7 @@
             height: 20px;
         }
     </style>
+
     <body>
         <div class="content">
             <button id="select-btn" class="button" type="button">查看当前选中canvas信息</button><button id="inline-btn" class="button" type="button">清除当前选中canvas</button>
@@ -114,15 +116,33 @@
                 let gridsize = 400; // 表格个数宽度
                 let cellWidth = 400; // 表格大小
                 for (var x = 1; x < canvas.width / gridsize; x++) {
-                    canvas.add(new fabric.Line([cellWidth * x, 0, cellWidth * x, 800], { stroke: '#000000', strokeWidth: 1, selectable: false })); // 竖线
-                    canvas.add(new fabric.Line([0, cellWidth * x, 800, cellWidth * x], { stroke: '#000000', strokeWidth: 1, selectable: false })); // 横线
+                    canvas.add(new fabric.Line([cellWidth * x, 0, cellWidth * x, 800], {
+                        stroke: '#000000',
+                        strokeWidth: 1,
+                        selectable: false
+                    })); // 竖线
+                    canvas.add(new fabric.Line([0, cellWidth * x, 800, cellWidth * x], {
+                        stroke: '#000000',
+                        strokeWidth: 1,
+                        selectable: false
+                    })); // 横线
                 }
                 // canvas表格--逻辑 虚线
                 let gridsize2 = 200; // 表格个数宽度
                 let cellWidth2 = 200; // 表格大小
                 for (var x = 1; x < canvas.width / gridsize2; x++) {
-                    canvas.add(new fabric.Line([cellWidth2 * x, 0, cellWidth2 * x, 800], { stroke: '#000000', strokeWidth: 1, strokeDashArray: [5, 5], selectable: false })); // 竖线
-                    canvas.add(new fabric.Line([0, cellWidth2 * x, 800, cellWidth2 * x], { stroke: '#000000', strokeWidth: 1, strokeDashArray: [5, 5], selectable: false })); // 横线
+                    canvas.add(new fabric.Line([cellWidth2 * x, 0, cellWidth2 * x, 800], {
+                        stroke: '#000000',
+                        strokeWidth: 1,
+                        strokeDashArray: [5, 5],
+                        selectable: false
+                    })); // 竖线
+                    canvas.add(new fabric.Line([0, cellWidth2 * x, 800, cellWidth2 * x], {
+                        stroke: '#000000',
+                        strokeWidth: 1,
+                        strokeDashArray: [5, 5],
+                        selectable: false
+                    })); // 横线
                 }
                 // ------------------------------------------------------------
                 let LabeledRect = fabric.util.createClass(fabric.Rect, {
@@ -154,7 +174,7 @@
                     }
                 });
 
-                var rect = new fabric.Rect({
+                var grect = new fabric.Rect({
                     // width: 200,
                     // height: 180,
                     // left: 0,
@@ -177,9 +197,13 @@
 
                 //  鼠标移入方框内 显示X  点击关闭方框    todo: 添加事件
                 let path = new fabric.Path('M 200 0 L 180 0 L 180 20 L 200 20 L 200 0 M 195 5 L 185 15 M 185 5 L 195 15');
-                path.set({ fill: 'white', stroke: 'black', opacity: 0 });
+                path.set({
+                    fill: 'white',
+                    stroke: 'black',
+                    opacity: 0
+                });
 
-                let group = new fabric.Group([rect, labeledRect, path], {
+                let group = new fabric.Group([grect, labeledRect, path], {
                     // left: 600,
                     // top: 600
                     // lockScalingX: true
@@ -243,7 +267,9 @@
                             onChange: function(value) {
                                 console.log(111, value);
                                 // if (value >= 0.5 && value <= 1) {
-                                e.target.set({ opacity: value });
+                                e.target.set({
+                                    opacity: value
+                                });
                                 // }
                                 canvas.renderAll();
                             },
@@ -260,6 +286,7 @@
                     'object:scaling': onChange,
                     'object:rotating': onChange
                 });
+
                 function onChange(o) {
                     o.target.setCoords();
                     canvas.forEachObject(function(obj) {
@@ -285,11 +312,26 @@
                         console.log('点击了：' + key);
                     },
                     items: {
-                        edit: { name: '编辑', icon: 'edit' },
-                        cut: { name: '剪切', icon: 'cut' },
-                        copy: { name: '复制', icon: 'copy' },
-                        paste: { name: '粘贴', icon: 'paste' },
-                        delete: { name: '删除', icon: 'delete' },
+                        edit: {
+                            name: '编辑',
+                            icon: 'edit'
+                        },
+                        cut: {
+                            name: '剪切',
+                            icon: 'cut'
+                        },
+                        copy: {
+                            name: '复制',
+                            icon: 'copy'
+                        },
+                        paste: {
+                            name: '粘贴',
+                            icon: 'paste'
+                        },
+                        delete: {
+                            name: '删除',
+                            icon: 'delete'
+                        },
                         sep1: '---------',
                         quit: {
                             name: '退出',
@@ -341,11 +383,31 @@
                 function showContextMenu(event, object) {
                     //定义右键菜单项
                     contextMenuItems = {
-                        delete: { name: '删除', icon: 'delete', data: object },
-                        zfirst: { name: '置顶', icon: 'copy', data: object },
-                        zend: { name: '置底', icon: 'paste', data: object },
-                        zup: { name: '向上一层', icon: 'copy', data: object },
-                        zdown: { name: '向下一层', icon: 'paste', data: object }
+                        delete: {
+                            name: '删除',
+                            icon: 'delete',
+                            data: object
+                        },
+                        zfirst: {
+                            name: '置顶',
+                            icon: 'copy',
+                            data: object
+                        },
+                        zend: {
+                            name: '置底',
+                            icon: 'paste',
+                            data: object
+                        },
+                        zup: {
+                            name: '向上一层',
+                            icon: 'copy',
+                            data: object
+                        },
+                        zdown: {
+                            name: '向下一层',
+                            icon: 'paste',
+                            data: object
+                        }
                     };
                     //右键菜单显示位置
                     var position = {
@@ -376,7 +438,7 @@
 
                 // ------------------------------------------------------------
                 // 拖拽生成矩形
-                var rect, isDown, origX, origY;
+                var rect, rect2, path2, ngroup, isDown, origX, origY;
 
                 canvas.on('mouse:down', o => {
                     if (o.target !== null) {
@@ -394,10 +456,19 @@
                             originY: 'top',
                             width: pointer.x - origX,
                             height: pointer.y - origY,
-                            fill: 'rgba(65, 171, 92, 0.8)'
+                            fill: 'rgba(255, 0, 0)'
                         });
-
-                        canvas.add(rect);
+                        rect2 = new fabric.Rect({
+                            left: origX,
+                            top: origY + 20,
+                            originX: 'left',
+                            originY: 'top',
+                            width: pointer.x - origX,
+                            height: pointer.y - origY,
+                            fill: 'rgba(0, 255, 0)',
+                            lockScalingX: true
+                        });
+                        canvas.add(rect, rect2);
                     }
                 });
 
@@ -405,24 +476,42 @@
                     if (!isDown) return;
                     // bug：pointer在canvas外则生成canvas外部的对象，不能被边界限制住
                     let pointer = canvas.getPointer(o.e);
-                    if (origX > pointer.x) {
-                        rect.set({ left: Math.abs(pointer.x) });
+                    if (origX < pointer.x) {
+                        rect.set({
+                            width: pointer.x - origX
+                        });
+                        rect2.set({
+                            width: pointer.x - origX
+                        })
                     }
-                    if (origY > pointer.y) {
-                        rect.set({ top: Math.abs(pointer.y) });
+                    if (origY < pointer.y) {
+                        rect.set({
+                            height: pointer.y - origY <= 20 ? pointer.y - origY : 20
+                        });
+                        rect2.set({
+                            height: pointer.y - 20 - origY
+                        });
                     }
-                    rect.set({ width: Math.abs(origX - pointer.x) });
-                    rect.set({ height: Math.abs(origY - pointer.y) });
-
                     canvas.renderAll();
                 });
 
                 canvas.on('mouse:up', o => {
                     isDown = false;
                     //画图完成后可以选中和移动
-                    if (rect) {
+                    if (rect && rect2) {
                         rect.setCoords();
+                        rect2.setCoords();
                     }
+                    // path2 = new fabric.Path('M 200 0 L 180 0 L 180 20 L 200 20 L 200 0 M 195 5 L 185 15 M 185 5 L 195 15');
+                    // path2.set({
+                    //     fill: 'white',
+                    //     stroke: 'black',
+                    //     opacity: 0
+                    // });
+                    ngroup = new fabric.Group([rect, rect2]);
+                    // if (ngroup) {
+                    //     ngroup.setCoords();
+                    // }
                 });
                 // ------------------------------------------------------------
 
@@ -465,6 +554,8 @@
                     // }
                 });
             });
+
         </script>
     </body>
+
 </html>
