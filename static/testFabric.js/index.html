@@ -1,6 +1,5 @@
 <!DOCTYPE >
 <html>
-
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
         <link rel="stylesheet" type="text/css" href="./contextMenu/jquery.contextMenu.css" />
@@ -78,18 +77,25 @@
             width: 100%;
             height: 20px;
         }
+
+        .container {
+            position: relative;
+        }
     </style>
 
     <body>
         <div class="content">
             <button id="select-btn" class="button" type="button">查看当前选中canvas信息</button><button id="inline-btn" class="button" type="button">清除当前选中canvas</button>
-            <div id="contextmenu-output"></div>
+
             <video id="video" width="320" height="240" muted controls class="canvas-img">
-                <!-- style="display: none" -->
                 <source src="http://www.quirksmode.org/html5/videos/big_buck_bunny.mp4" type="video/mp4" />
                 <source src="http://www.quirksmode.org/html5/videos/big_buck_bunny.ogv" type="video/ogv" />
             </video>
-            <canvas id="canvas" width="800" height="800"></canvas>
+
+            <div class="container">
+                <div id="contextmenu-output"></div>
+                <canvas id="canvas" width="800" height="800"></canvas>
+            </div>
         </div>
         <!---->
         <script>
@@ -116,33 +122,47 @@
                 let gridsize = 400; // 表格个数宽度
                 let cellWidth = 400; // 表格大小
                 for (var x = 1; x < canvas.width / gridsize; x++) {
-                    canvas.add(new fabric.Line([cellWidth * x, 0, cellWidth * x, 800], {
-                        stroke: '#000000',
-                        strokeWidth: 1,
-                        selectable: false
-                    })); // 竖线
-                    canvas.add(new fabric.Line([0, cellWidth * x, 800, cellWidth * x], {
-                        stroke: '#000000',
-                        strokeWidth: 1,
-                        selectable: false
-                    })); // 横线
+                    console.log('add3');
+                    canvas.add(
+                        new fabric.Line([cellWidth * x, 0, cellWidth * x, 800], {
+                            stroke: '#000000',
+                            strokeWidth: 1,
+                            selectable: false,
+                            evented: false
+                        })
+                    ); // 竖线
+                    canvas.add(
+                        new fabric.Line([0, cellWidth * x, 800, cellWidth * x], {
+                            stroke: '#000000',
+                            strokeWidth: 1,
+                            selectable: false,
+                            evented: false
+                        })
+                    ); // 横线
                 }
                 // canvas表格--逻辑 虚线
                 let gridsize2 = 200; // 表格个数宽度
                 let cellWidth2 = 200; // 表格大小
+                console.log('add4');
                 for (var x = 1; x < canvas.width / gridsize2; x++) {
-                    canvas.add(new fabric.Line([cellWidth2 * x, 0, cellWidth2 * x, 800], {
-                        stroke: '#000000',
-                        strokeWidth: 1,
-                        strokeDashArray: [5, 5],
-                        selectable: false
-                    })); // 竖线
-                    canvas.add(new fabric.Line([0, cellWidth2 * x, 800, cellWidth2 * x], {
-                        stroke: '#000000',
-                        strokeWidth: 1,
-                        strokeDashArray: [5, 5],
-                        selectable: false
-                    })); // 横线
+                    canvas.add(
+                        new fabric.Line([cellWidth2 * x, 0, cellWidth2 * x, 800], {
+                            stroke: '#000000',
+                            strokeWidth: 1,
+                            strokeDashArray: [5, 5],
+                            selectable: false,
+                            evented: false
+                        })
+                    ); // 竖线
+                    canvas.add(
+                        new fabric.Line([0, cellWidth2 * x, 800, cellWidth2 * x], {
+                            stroke: '#000000',
+                            strokeWidth: 1,
+                            strokeDashArray: [5, 5],
+                            selectable: false,
+                            evented: false
+                        })
+                    ); // 横线
                 }
                 // ------------------------------------------------------------
                 let LabeledRect = fabric.util.createClass(fabric.Rect, {
@@ -200,22 +220,28 @@
                 path.set({
                     fill: 'white',
                     stroke: 'black',
-                    opacity: 0
+                    opacity: 1
                 });
 
                 let group = new fabric.Group([grect, labeledRect, path], {
                     // left: 600,
                     // top: 600
                     // lockScalingX: true
+                    subTargetCheck: true
                 });
 
+                console.log('add5');
                 canvas.add(group);
 
                 group.item(1).set({
                     label: 'niexinyu'
                 });
 
-                group.on('mousemove', function() {
+                path.on('mousedown', function() {
+                    canvas.remove(group);
+                });
+
+                group.on('mousemove', function(e) {
                     group.item(2).set({
                         opacity: 1
                     });
@@ -253,31 +279,40 @@
                     originY: 'center',
                     objectCaching: false
                 });
-                canvas.add(video);
-                video.getElement().play();
+                // canvas.add(video);
+                // video.getElement().play();
 
                 // ------------------------------------------------------------
 
                 function animate(e, dir) {
-                    if (e.target && dir >= 0 && dir <= 1) {
-                        fabric.util.animate({
-                            startValue: e.target.get('opacity'),
-                            endValue: e.target.get('opacity') + (dir ? 0.2 : -0.2),
-                            duration: 100,
-                            onChange: function(value) {
-                                console.log(111, value);
-                                // if (value >= 0.5 && value <= 1) {
-                                e.target.set({
-                                    opacity: value
-                                });
-                                // }
-                                canvas.renderAll();
-                            },
-                            onComplete: function() {
-                                e.target.setCoords();
-                            }
-                        });
-                    }
+                    // if (e.target && dir >= 0 && dir <= 1) {
+                    //     fabric.util.animate('opacity', '-0.1', {
+                    //         // startValue: e.target.get('opacity'),
+                    //         // endValue: e.target.get('opacity') + (dir ? 0.2 : -0.2),
+                    //         duration: 100,
+                    //         onChange: function(value) {
+                    //             // console.log(111, value);
+                    //             // if (value >= 0.5 && value <= 1) {
+                    //             // e.target.set({
+                    //             //     opacity: value
+                    //             // });
+                    //             // }
+                    //             canvas.renderAll();
+                    //         },
+                    //         onComplete: function() {
+                    //             e.target.setCoords();
+                    //         }
+                    //     });
+                    // }
+
+                    e.target.animate('opacity', e.target.opacity == 1 ? 0.5 : 1, {
+                        duration: 1,
+                        onChange: canvas.renderAll.bind(canvas),
+                        onComplete: function() {
+                            // animateBtn.disabled = false;
+                        }
+                        // easing: fabric.util.ease['easeOutQuad']
+                    });
                 }
 
                 // 添加事件
@@ -294,11 +329,11 @@
                         // 重叠
                         // obj.set('opacity', o.target.intersectsWithObject(obj) ? 0.5 : 1);
                         if (o.target.intersectsWithObject(obj)) {
-                            console.log(111);
-                            // animate(o, 1);
+                            // console.log(111);
+                            animate(o, 1);
                         } else {
-                            console.log(222);
-                            // animate(o, 0);
+                            // console.log(222);
+                            animate(o, 0);
                         }
                     });
                 }
@@ -381,6 +416,7 @@
 
                 //右键菜单项点击
                 function showContextMenu(event, object) {
+                    console.log(event);
                     //定义右键菜单项
                     contextMenuItems = {
                         delete: {
@@ -449,31 +485,38 @@
                         isDown = true;
                         origX = pointer.x;
                         origY = pointer.y;
+                    }
+                });
+
+                canvas.on('mouse:move', o => {
+                    if (!isDown) return;
+
+                    if (!rect || !rect2) {
                         rect = new fabric.Rect({
                             left: origX,
                             top: origY,
                             originX: 'left',
                             originY: 'top',
-                            width: pointer.x - origX,
-                            height: pointer.y - origY,
-                            fill: 'rgba(255, 0, 0)'
+                            // width: pointer.x - origX,
+                            // height: pointer.y - origY,
+                            fill: 'rgba(255, 0, 0)',
+                            lockScalingX: true
                         });
                         rect2 = new fabric.Rect({
                             left: origX,
                             top: origY + 20,
                             originX: 'left',
                             originY: 'top',
-                            width: pointer.x - origX,
-                            height: pointer.y - origY,
-                            fill: 'rgba(0, 255, 0)',
-                            lockScalingX: true
+                            // width: pointer.x - origX,
+                            // height: pointer.y - origY,
+                            fill: 'rgba(0, 255, 0)'
+                            // lockScalingX: true
                         });
+
+                        console.log('add1');
                         canvas.add(rect, rect2);
                     }
-                });
 
-                canvas.on('mouse:move', o => {
-                    if (!isDown) return;
                     // bug：pointer在canvas外则生成canvas外部的对象，不能被边界限制住
                     let pointer = canvas.getPointer(o.e);
                     if (origX < pointer.x) {
@@ -482,7 +525,7 @@
                         });
                         rect2.set({
                             width: pointer.x - origX
-                        })
+                        });
                     }
                     if (origY < pointer.y) {
                         rect.set({
@@ -496,11 +539,17 @@
                 });
 
                 canvas.on('mouse:up', o => {
+                    console.log(canvas.getObjects());
                     isDown = false;
                     //画图完成后可以选中和移动
                     if (rect && rect2) {
-                        rect.setCoords();
-                        rect2.setCoords();
+                        ngroup = new fabric.Group([rect, rect2], { subTargetCheck: true });
+                        console.log('add2');
+                        canvas.add(ngroup);
+                        canvas.remove(rect);
+                        canvas.remove(rect2);
+                        rect = null;
+                        rect2 = null;
                     }
                     // path2 = new fabric.Path('M 200 0 L 180 0 L 180 20 L 200 20 L 200 0 M 195 5 L 185 15 M 185 5 L 195 15');
                     // path2.set({
@@ -508,7 +557,6 @@
                     //     stroke: 'black',
                     //     opacity: 0
                     // });
-                    ngroup = new fabric.Group([rect, rect2]);
                     // if (ngroup) {
                     //     ngroup.setCoords();
                     // }
@@ -516,7 +564,7 @@
                 // ------------------------------------------------------------
 
                 // ------------------------------------------------------------
-                // 边界检测
+                // 边界检测;
                 canvas.on('object:moving', o => {
                     let pointer = canvas.getPointer(o.e);
                     let pointer2 = o.target.getBoundingRect();
@@ -541,7 +589,7 @@
                 });
 
                 $('#select-btn').on('click', function() {
-                    console.log(canvas.getActiveObject());
+                    // console.log(canvas.getActiveObject());
                 });
                 $('#inline-btn').on('click', function() {
                     canvas.remove(canvas.getActiveObject());
@@ -554,8 +602,6 @@
                     // }
                 });
             });
-
         </script>
     </body>
-
 </html>

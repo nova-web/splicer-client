@@ -18,6 +18,17 @@
         <div id="hls2"></div>
       </div>
     </div>
+    <h1>Canvas:</h1>
+    <div class="row">
+      <div class="source">
+        <canvas id="canvas1">
+          <!-- <source src="../../../static/ychx.mp4"> -->
+        </canvas>
+      </div>
+      <div class="source">
+        <canvas id="canvas2"></canvas>
+      </div>
+    </div>
   </div>
 </template>
 
