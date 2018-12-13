@@ -1,5 +1,6 @@
 <!DOCTYPE >
 <html>
+
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
         <link rel="stylesheet" type="text/css" href="./contextMenu/jquery.contextMenu.css" />
@@ -220,7 +221,8 @@
                 path.set({
                     fill: 'white',
                     stroke: 'black',
-                    opacity: 1
+                    opacity: 1,
+                    hoverCursor: 'pointer'
                 });
 
                 let group = new fabric.Group([grect, labeledRect, path], {
@@ -239,9 +241,16 @@
 
                 path.on('mousedown', function() {
                     canvas.remove(group);
+                    canvas.hoverCursor = 'move'
+                });
+                path.on('mousemove', function() {
+                    // 移入指针变为小手
+                    canvas.hoverCursor = 'pointer'
                 });
 
                 group.on('mousemove', function(e) {
+                    // 移入指针变为箭头
+                    canvas.hoverCursor = 'move'
                     group.item(2).set({
                         opacity: 1
                     });
@@ -250,8 +259,7 @@
                 group.on('mouseout', function(event) {
                     group.item(2).set({
                         opacity: 0,
-                        selectable: 'true',
-                        hoverCursor: 'pointer'
+                        selectable: 'true'
                     });
                     canvas.renderAll();
                 });
@@ -284,33 +292,11 @@
 
                 // ------------------------------------------------------------
 
-                function animate(e, dir) {
-                    // if (e.target && dir >= 0 && dir <= 1) {
-                    //     fabric.util.animate('opacity', '-0.1', {
-                    //         // startValue: e.target.get('opacity'),
-                    //         // endValue: e.target.get('opacity') + (dir ? 0.2 : -0.2),
-                    //         duration: 100,
-                    //         onChange: function(value) {
-                    //             // console.log(111, value);
-                    //             // if (value >= 0.5 && value <= 1) {
-                    //             // e.target.set({
-                    //             //     opacity: value
-                    //             // });
-                    //             // }
-                    //             canvas.renderAll();
-                    //         },
-                    //         onComplete: function() {
-                    //             e.target.setCoords();
-                    //         }
-                    //     });
-                    // }
-
-                    e.target.animate('opacity', e.target.opacity == 1 ? 0.5 : 1, {
+                function animate(obj) {
+                    obj.animate('opacity', obj.opacity == 1 ? 0.5 : 1, {
                         duration: 1,
                         onChange: canvas.renderAll.bind(canvas),
-                        onComplete: function() {
-                            // animateBtn.disabled = false;
-                        }
+                        onComplete: function() {}
                         // easing: fabric.util.ease['easeOutQuad']
                     });
                 }
@@ -328,15 +314,30 @@
                         if (obj === o.target) return;
                         // 重叠
                         // obj.set('opacity', o.target.intersectsWithObject(obj) ? 0.5 : 1);
-                        if (o.target.intersectsWithObject(obj)) {
-                            // console.log(111);
-                            animate(o, 1);
-                        } else {
-                            // console.log(222);
-                            animate(o, 0);
+                        if (canvas.getObjects().indexOf(obj) >= 8) {
+                            if (o.target.intersectsWithObject(obj)) {
+                                animate(obj);
+                            }
                         }
                     });
                 }
+
+                // canvas.on('object:scaling', function(o) {
+                //     // bug: <1 的时候  标题矩形scaleY不对   >1的时候 下方矩形没有填充到空白区域
+                //     // 暂不考虑这种做法
+                //     if (o.target.scaleY < 1) {
+                //         // o.target._objects[0].scaleY = 1 + (1 - o.target.scaleY)
+                //         console.log('o缩放', o.target.scaleY, o.target._objects[0].scaleY);
+                //     } else {
+                //         o.target._objects[0].scaleY = 1 / (o.target.scaleY)
+                //         console.log('o放大', o.target.scaleY, o.target._objects[0].scaleY);
+                //     }
+
+                //     canvas.renderAll()
+                // });
+                // canvas.on('object:scaled', function() {
+                //     console.log(222);
+                // });
 
                 // ------------------------------------------------------------
 
@@ -416,7 +417,6 @@
 
                 //右键菜单项点击
                 function showContextMenu(event, object) {
-                    console.log(event);
                     //定义右键菜单项
                     contextMenuItems = {
                         delete: {
@@ -463,12 +463,17 @@
                         // 层级：你可以得到z - index:canvas.getObjects().indexOf(some_object)。   // https://www.kancloud.cn/cxr17618/fabricjs/621301
                         canvas.bringToFront(object);
                     } else if (key == 'zend') {
-                        // error: 置底 会导致虚线在图形上方，
-                        canvas.sendToBack(object);
+                        // fix: 直接置底 会导致虚线在图形上方， 解决：除虚线实现外的最下层为8
+                        // canvas.sendToBack(object); // back是0
+                        canvas.moveTo(object, 8);
                     } else if (key == 'zup') {
                         canvas.bringForward(object);
                     } else if (key == 'zdown') {
-                        canvas.sendBackwards(object);
+                        if (canvas.getObjects().indexOf(object) >= 9) {
+                            canvas.sendBackwards(object);
+                        } else {
+                            canvas.moveTo(object, 8);
+                        }
                     }
                 }
 
@@ -499,7 +504,7 @@
                             originY: 'top',
                             // width: pointer.x - origX,
                             // height: pointer.y - origY,
-                            fill: 'rgba(255, 0, 0)',
+                            fill: '#' + (Math.random() * 0xFFFFFF << 0).toString(16),
                             lockScalingX: true
                         });
                         rect2 = new fabric.Rect({
@@ -509,15 +514,13 @@
                             originY: 'top',
                             // width: pointer.x - origX,
                             // height: pointer.y - origY,
-                            fill: 'rgba(0, 255, 0)'
-                            // lockScalingX: true
+                            fill: '#' + (Math.random() * 0xFFFFFF << 0).toString(16)
                         });
 
                         console.log('add1');
                         canvas.add(rect, rect2);
                     }
 
-                    // bug：pointer在canvas外则生成canvas外部的对象，不能被边界限制住
                     let pointer = canvas.getPointer(o.e);
                     if (origX < pointer.x) {
                         rect.set({
@@ -539,11 +542,17 @@
                 });
 
                 canvas.on('mouse:up', o => {
-                    console.log(canvas.getObjects());
+                    // console.log(canvas.getObjects());
+                    // canvas.forEachObject(function(obj) {
+                    //     console.log(111, canvas.getObjects().indexOf(obj));
+                    // });
+                    // console.log(9999, canvas.getObjects().indexOf(o.target));
                     isDown = false;
                     //画图完成后可以选中和移动
                     if (rect && rect2) {
-                        ngroup = new fabric.Group([rect, rect2], { subTargetCheck: true });
+                        ngroup = new fabric.Group([rect, rect2], {
+                            subTargetCheck: true
+                        });
                         console.log('add2');
                         canvas.add(ngroup);
                         canvas.remove(rect);
@@ -565,31 +574,31 @@
 
                 // ------------------------------------------------------------
                 // 边界检测;
-                canvas.on('object:moving', o => {
-                    let pointer = canvas.getPointer(o.e);
-                    let pointer2 = o.target.getBoundingRect();
-                    // console.log(pointer, pointer2);
+                // canvas.on('object:moving', o => {
+                //     let pointer = canvas.getPointer(o.e);
+                //     let pointer2 = o.target.getBoundingRect();
+                //     // console.log(pointer, pointer2);
 
-                    var obj = o.target;
-                    // if object is too big ignore
-                    if (obj.currentHeight > obj.canvas.height || obj.currentWidth > obj.canvas.width) {
-                        return;
-                    }
-                    obj.setCoords();
-                    // top-left corner
-                    if (obj.getBoundingRect().top < 0 || obj.getBoundingRect().left < 0) {
-                        obj.top = Math.max(obj.top, obj.top - obj.getBoundingRect().top);
-                        obj.left = Math.max(obj.left, obj.left - obj.getBoundingRect().left);
-                    }
-                    // bot-right corner
-                    if (obj.getBoundingRect().top + obj.getBoundingRect().height > obj.canvas.height || obj.getBoundingRect().left + obj.getBoundingRect().width > obj.canvas.width) {
-                        obj.top = Math.min(obj.top, obj.canvas.height - obj.getBoundingRect().height + obj.top - obj.getBoundingRect().top);
-                        obj.left = Math.min(obj.left, obj.canvas.width - obj.getBoundingRect().width + obj.left - obj.getBoundingRect().left);
-                    }
-                });
+                //     var obj = o.target;
+                //     // if object is too big ignore
+                //     if (obj.currentHeight > obj.canvas.height || obj.currentWidth > obj.canvas.width) {
+                //         return;
+                //     }
+                //     obj.setCoords();
+                //     // top-left corner
+                //     if (obj.getBoundingRect().top < 0 || obj.getBoundingRect().left < 0) {
+                //         obj.top = Math.max(obj.top, obj.top - obj.getBoundingRect().top);
+                //         obj.left = Math.max(obj.left, obj.left - obj.getBoundingRect().left);
+                //     }
+                //     // bot-right corner
+                //     if (obj.getBoundingRect().top + obj.getBoundingRect().height > obj.canvas.height || obj.getBoundingRect().left + obj.getBoundingRect().width > obj.canvas.width) {
+                //         obj.top = Math.min(obj.top, obj.canvas.height - obj.getBoundingRect().height + obj.top - obj.getBoundingRect().top);
+                //         obj.left = Math.min(obj.left, obj.canvas.width - obj.getBoundingRect().width + obj.left - obj.getBoundingRect().left);
+                //     }
+                // });
 
                 $('#select-btn').on('click', function() {
-                    // console.log(canvas.getActiveObject());
+                    console.log(canvas.getActiveObject());
                 });
                 $('#inline-btn').on('click', function() {
                     canvas.remove(canvas.getActiveObject());
@@ -602,6 +611,8 @@
                     // }
                 });
             });
+
         </script>
     </body>
+
 </html>
