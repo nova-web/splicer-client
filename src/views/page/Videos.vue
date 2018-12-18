@@ -42,6 +42,8 @@
       this.playHLS('hls2', 'http://172.16.6.200/hls2/test.m3u8');
       this.playRTMP('rtmp1', 'rtmp://172.16.6.200/rtmp1/test');
       this.playRTMP('rtmp2', 'rtmp://172.16.6.200/rtmp2/test');
+      this.playSocket('canvas1', 'ws://172.16.6.200:8082');
+      this.playSocket('canvas2', 'ws://172.16.6.200:8084');
     },
     methods: {
       playHLS(id, src) {
@@ -81,6 +83,10 @@
           },
           ak: 'cc94de6803904f2ca7159eedeaced55d'
         });
+      },
+      playSocket(id, src) {
+        var canvas = document.getElementById(id);
+        new JSMpeg.Player(src, { canvas: canvas, autoplay: true, disableGl: true, disableWebAssembly: true });
       }
     }
   }
