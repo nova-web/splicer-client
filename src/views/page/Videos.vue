@@ -97,6 +97,11 @@
     display: flex;
     .source {
       margin-right: 10px;
+      width: 512px;
+      height: 384px;
+      canvas {
+        width: 100%;
+      }
     }
   }
 </style>
